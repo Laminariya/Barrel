@@ -174,6 +174,13 @@ namespace Kedr
         /// </summary>
         private void Start()
         {
+            
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+        
+            // 4. Выгрузка ресурсов
+            Resources.UnloadUnusedAssets();
+            
             Debug.Log("Start");
             _isReconnected = false;
             _texture2D = new Texture2D(100,100, TextureFormat.R8, false);
@@ -225,16 +232,16 @@ namespace Kedr
             // Материалы для вывода: новые экземпляры на каждый UI/mesh
             if (outputImage)
             {
-                if(outputImage.material != null)
-                    Destroy(outputImage.material);
+                // if(outputImage.material != null)
+                //     Destroy(outputImage.material);
                 outputImage.material = new Material(revealMaterial);
                 outputImage.material.SetTexture(NoiseTex, noiseTexture);
             }
 
             if (meshRenderer)
             {
-                if(meshRenderer.material != null)
-                    Destroy(meshRenderer.material);
+                // if(meshRenderer.material != null)
+                //     Destroy(meshRenderer.material);
                 meshRenderer.material = new Material(revealMaterial);
                 meshRenderer.material.SetTexture(NoiseTex, noiseTexture);
             }
@@ -243,7 +250,16 @@ namespace Kedr
             ResetMask();
           
         }
-        
+
+        private void OnDestroy()
+        {
+            if (_webcam != null)
+            {
+                _webcam.Stop();
+                Destroy(_webcam);
+            }
+        }
+
         private void InitializeWebCam()
         {
             // Остановить и очистить предыдущую текстуру
@@ -296,7 +312,11 @@ namespace Kedr
         /// </summary>
         private void Update()
         {
-            Debug.Log("Update " + _isReconnected);
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                ActivateSettings();
+            }
+            //Debug.Log("Update " + _isReconnected);
             if(_isReconnected) return;
             
             if (_webcam == null && !_isReconnected)
@@ -311,15 +331,10 @@ namespace Kedr
                 return;
             }
             
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                ActivateSettings();
-            }
-
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                ResetMask();
-            }
+            // if (Input.GetKeyDown(KeyCode.R))
+            // {
+            //     ResetMask();
+            // }
 
             if(_isPaused) return;
             if (_wipeDelayTimer > 0f)

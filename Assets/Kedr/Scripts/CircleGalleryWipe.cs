@@ -1,7 +1,6 @@
 using Kedr;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
