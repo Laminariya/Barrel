@@ -149,21 +149,21 @@ public class CircleGalleryWipe : MonoBehaviour
             _controller.ThresholdSlider.value += 0.01f;
             _controller.OnThresholdSlider(_controller.ThresholdSlider.value);
         }
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.D))
         {
             _controller.FadeSlider.value -= 0.01f;
             _controller.OnFadeSlider(_controller.FadeSlider.value);
         }
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.F))
         {
             _controller.FadeSlider.value += 0.01f;
             _controller.OnFadeSlider(_controller.FadeSlider.value);
         }
 
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
+        // if (Input.GetKeyDown(KeyCode.M))
+        // {
+        //     SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        // }
     }
 
     private void SetCirclePosition()
