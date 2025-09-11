@@ -1,7 +1,9 @@
+using Kedr;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class CircleGalleryWipe : MonoBehaviour
 {
@@ -25,9 +27,11 @@ public class CircleGalleryWipe : MonoBehaviour
     private int _height = 480;
     private float _ratio;
     private float _scale;
+    private GalleryWipeController _controller;
 
-    public void Init(int width, int height)
+    public void Init(int width, int height, GalleryWipeController controller)
     {
+        _controller = controller;
         _width = width;
         _height = height;
         _ratio = _width / (float)_height;
@@ -67,6 +71,7 @@ public class CircleGalleryWipe : MonoBehaviour
         PlayerPrefs.SetInt("Radius_Wipe", Radius);
         PlayerPrefs.SetFloat("Scale_Wipe", RawImage.localScale.x);
         PlayerPrefs.SetInt("BlackPoint_Wipe", CountBlackPoint);
+        PlayerPrefs.Save();
     }
     
     private void FixedUpdate()
@@ -96,6 +101,8 @@ public class CircleGalleryWipe : MonoBehaviour
         {
             OnRadiusUp();
         }
+
+       
     }
 
     private void Update()
@@ -104,6 +111,60 @@ public class CircleGalleryWipe : MonoBehaviour
             OnUpScale();
         if(Input.GetKeyDown(KeyCode.I))
             OnDownScale();
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            _controller.ToggleLeft.isOn = !_controller.ToggleLeft.isOn;
+            _controller.OnLeft(_controller.ToggleLeft);
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            _controller.ToggleRight.isOn = !_controller.ToggleRight.isOn;
+            _controller.OnRight(_controller.ToggleRight);
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            _controller.ToggleRevX.isOn = !_controller.ToggleRevX.isOn;
+            _controller.OnRevX(_controller.ToggleRevX);
+        }
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            _controller.ToggleRevY.isOn = !_controller.ToggleRevY.isOn;
+            _controller.OnRevY(_controller.ToggleRevY);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            OnDownBlackPoint();
+        }
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            OnUpBlackPoint();
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            _controller.ThresholdSlider.value -= 0.01f;
+            _controller.OnThresholdSlider(_controller.ThresholdSlider.value);
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            _controller.ThresholdSlider.value += 0.01f;
+            _controller.OnThresholdSlider(_controller.ThresholdSlider.value);
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            _controller.FadeSlider.value -= 0.01f;
+            _controller.OnFadeSlider(_controller.FadeSlider.value);
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            _controller.FadeSlider.value += 0.01f;
+            _controller.OnFadeSlider(_controller.FadeSlider.value);
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 
     private void SetCirclePosition()
@@ -154,6 +215,7 @@ public class CircleGalleryWipe : MonoBehaviour
     private void OnRadiusDown()
     {
         Radius--;
+        if(Radius<10f) Radius = 10;
         SetCircleRadius();
     }
 

@@ -158,6 +158,8 @@ namespace Kedr
         public float RemoveTimer = 5f;
         private float _removeTimer;
         private List<Sprite> _removeSprites = new List<Sprite>();
+        private bool _isReconnected;
+        private Texture2D _texture2D;
         
         //----------------------------------------------
 
@@ -172,15 +174,15 @@ namespace Kedr
         /// </summary>
         private void Start()
         {
+            Debug.Log("Start");
+            _isReconnected = false;
+            _texture2D = new Texture2D(100,100, TextureFormat.R8, false);
             _circleGalleryWipe = FindObjectOfType<CircleGalleryWipe>();
-            _webcam = new WebCamTexture(WebCamTexture.devices[webcamIndex].name, maskSize.x, maskSize.y, 30);
-            MeshRenderer.material.mainTexture = _webcam;
-            CameraRawImage.texture = _webcam;
-            _webcam.Play();
+            InitializeWebCam();
             Debug.Log(_webcam.width + "x" + _webcam.height);
             maskSize.x = _webcam.width;
             maskSize.y = _webcam.height;
-            _circleGalleryWipe.Init(_webcam.width, _webcam.height);
+            _circleGalleryWipe.Init(_webcam.width, _webcam.height, this);
             
             if (PlayerPrefs.HasKey("Fade"))
             {
@@ -223,12 +225,16 @@ namespace Kedr
             // Материалы для вывода: новые экземпляры на каждый UI/mesh
             if (outputImage)
             {
+                if(outputImage.material != null)
+                    Destroy(outputImage.material);
                 outputImage.material = new Material(revealMaterial);
                 outputImage.material.SetTexture(NoiseTex, noiseTexture);
             }
 
             if (meshRenderer)
             {
+                if(meshRenderer.material != null)
+                    Destroy(meshRenderer.material);
                 meshRenderer.material = new Material(revealMaterial);
                 meshRenderer.material.SetTexture(NoiseTex, noiseTexture);
             }
@@ -237,14 +243,74 @@ namespace Kedr
             ResetMask();
           
         }
-
         
+        private void InitializeWebCam()
+        {
+            // Остановить и очистить предыдущую текстуру
+            if (_webcam != null)
+            {
+                _webcam.Stop();
+                _webcam = null;
+            }
 
+            // Поиск камеры
+            WebCamDevice[] devices = WebCamTexture.devices;
+            if (devices.Length == 0)
+            {
+                Debug.LogError("No web cameras found");
+                _isReconnected = false;
+                return;
+            }
+
+            // Выбор камеры (по умолчанию или по имени)
+            _webcam = new WebCamTexture(WebCamTexture.devices[0].name, maskSize.x, maskSize.y, 30);
+            MeshRenderer.material.mainTexture = _webcam;
+            CameraRawImage.texture = _webcam;
+            _webcam.Play();
+            _isReconnected = false;
+        }
+        
+        public void ReconnectCamera()
+        {
+            StartCoroutine(ReconnectCoroutine());
+        }
+        
+        private IEnumerator ReconnectCoroutine()
+        {
+            _isReconnected = true;
+            // Остановка камеры
+            if (_webcam != null)
+            {
+                _webcam.Stop();
+                Destroy(_webcam);
+            }
+
+            yield return new WaitForSeconds(5.5f); // Задержка перед переподключением
+
+            // Повторная инициализация
+            InitializeWebCam();
+        }
+        
         /// <summary>
         /// Основной цикл работы: обработка маски, смена изображений, логика fade и inactivity.
         /// </summary>
         private void Update()
         {
+            Debug.Log("Update " + _isReconnected);
+            if(_isReconnected) return;
+            
+            if (_webcam == null && !_isReconnected)
+            {
+                ReconnectCamera();
+                return;
+            }
+
+            if (_webcam != null && !_webcam.isPlaying)
+            {
+                ReconnectCamera();
+                return;
+            }
+            
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 ActivateSettings();
@@ -261,9 +327,9 @@ namespace Kedr
                 _wipeDelayTimer -= Time.deltaTime;
                 return;
             }
-
-            if (!_webcam.didUpdateThisFrame) return;
-
+            //Debug.Log("XXX");
+            if (_webcam != null && !_webcam.didUpdateThisFrame) return;
+            //Debug.Log("CCC");
             // Блок плавного исчезновения (fade)
             if (_isFading)
             {
@@ -300,7 +366,18 @@ namespace Kedr
             int cordX = _circleGalleryWipe.CenterX;
             int cordY = _circleGalleryWipe.CenterY;
             
-            var readTex = new Texture2D(lenght,lenght, TextureFormat.R8, false);
+            _texture2D = new Texture2D(lenght,lenght, TextureFormat.R8, false);
+            if (cordX - _circleGalleryWipe.Radius < 0 || cordY - _circleGalleryWipe.Radius < 0 ||
+                cordX - _circleGalleryWipe.Radius > _webcam.width - 1 ||
+                cordY - _circleGalleryWipe.Radius > _webcam.height - 1 ||
+                cordX - _circleGalleryWipe.Radius + lenght > _webcam.width - 1 ||
+                cordY - _circleGalleryWipe.Radius + lenght > _webcam.height - 1)
+            {
+                Debug.LogWarning("CordX and CordY");
+                CountBlack.text = "-1";
+                return;
+            }
+
             Color[] pixels = _webcam.GetPixels(cordX - _circleGalleryWipe.Radius, cordY - _circleGalleryWipe.Radius, lenght, lenght);
             int x = 0;
             int y = 0;
@@ -333,22 +410,22 @@ namespace Kedr
                         y = lenght - 1 - y;
                     }
 
-                    readTex.SetPixel(x, y, pixels[j * lenght + i]); //Стандартно
+                    _texture2D.SetPixel(x, y, pixels[j * lenght + i]); //Стандартно
                 }
             }
 
             //readTex.SetPixels(_webcam.GetPixels(200, 200, 100, 100));
-            readTex.Apply();
-             TestSpriteRenderer.sprite = Sprite.Create(readTex, new Rect(0.0f, 0.0f, readTex.width, readTex.height),
-                 new Vector2(0.5f, 0.5f), 100.0f); 
+            _texture2D.Apply();
+             //TestSpriteRenderer.sprite = Sprite.Create(_texture2D, new Rect(0.0f, 0.0f, _texture2D.width, _texture2D.height),
+              //   new Vector2(0.5f, 0.5f), 100.0f); 
             
             // --- Генерация маски по веб-камере ---
-            brushMaskMaterial.mainTexture = readTex;
+            brushMaskMaterial.mainTexture = _texture2D;
             brushMaskMaterial.SetTexture(NoiseTex, noiseTexture);
             brushMaskMaterial.SetFloat(Threshold, threshold);
             brushMaskMaterial.SetFloat(Blur, blur);
             brushMaskMaterial.SetFloat(NoiseAmount, noiseAmount);
-            Graphics.Blit(readTex, _brushRT, brushMaskMaterial);
+            Graphics.Blit(_texture2D, _brushRT, brushMaskMaterial);
 
             // --- Накопление результата кисти в общей маске ---
             var tempRT = RenderTexture.GetTemporary(_wipeMaskRT.width, _wipeMaskRT.height, 0, RenderTextureFormat.R8);
@@ -364,11 +441,11 @@ namespace Kedr
             //var handNow = HandDetected();
 
             int _blackCount = 0;
-            for (int i = 0; i < readTex.width; i += 2)
+            for (int i = 0; i < _texture2D.width; i += 2)
             {
-                for (int j = 0; j < readTex.height; j += 2)
+                for (int j = 0; j < _texture2D.height; j += 2)
                 {
-                    if (GetTruePixel(pixels[j * readTex.width + i]))
+                    if (GetTruePixel(pixels[j * _texture2D.width + i]))
                     {
                         _blackCount++;
                     }
@@ -378,19 +455,8 @@ namespace Kedr
             blackCount = _blackCount;
             CountBlack.text = blackCount.ToString();
             
-            if (blackCount > _circleGalleryWipe.CountBlackPoint)
+            if (blackCount > _circleGalleryWipe.CountBlackPoint) //ТУт
             {
-                
-                //Debug.Log("Hand Detected");
-                // if (_screensaverActive)
-                // {
-                //     _screensaverActive = false;
-                //     _fgIndex = -1;
-                //     _bgIndex = 0;
-                //     ResetMask();
-                //     SetRevealPair(GetImageByIndex(_fgIndex), GetImageByIndex(_bgIndex), 0f);
-                // }
-
                 // Если стерто достаточно — запускаем fade
                 if (CheckRevealedPercent(_wipeMaskRT) > revealThreshold && !_isFading)
                 {
@@ -434,8 +500,7 @@ namespace Kedr
             }
 
            
-
-
+            Destroy(_texture2D);
         }
 
         /// <summary>
@@ -459,6 +524,7 @@ namespace Kedr
         private void SetRevealPair(Texture fg, Texture bg, float fadeT)
         {
             var m = new Material(revealMaterial);
+            var b = revealMaterial;
             m.SetTexture(MainTex, fg);
             m.SetTexture(BgTex, bg);
             m.SetTexture(MaskTex, _wipeMaskRT);
@@ -467,8 +533,18 @@ namespace Kedr
             m.SetFloat(EdgeFeather, edgeFeather);
             m.SetFloat(FadeT, fadeT);
 
-            if (outputImage) outputImage.material = m;
-            if (meshRenderer) meshRenderer.material = m;
+            if (outputImage)
+            {
+                Destroy(outputImage.material);
+                outputImage.material = m;
+            }
+
+            if (meshRenderer)
+            {
+                Destroy(meshRenderer.material);
+                meshRenderer.material = m;
+            }
+            
         }
 
         /// <summary>
@@ -579,13 +655,13 @@ namespace Kedr
             VideoPlayer.url = _videoPaths[_currentVideoIndex];
         }
 
-        private void OnFadeSlider(float valume)
+        public void OnFadeSlider(float valume)
         {
             fadeDuration = valume/10f;
             FadeText.text = valume.ToString().Substring(0,4);
         }
 
-        private void OnThresholdSlider(float valume)
+        public void OnThresholdSlider(float valume)
         {
             revealThreshold = valume;
             ThresholdText.text = valume.ToString().Substring(0,4);

@@ -624,23 +624,51 @@
     <Reference Include="System.Xml.Serialization">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2022.3.39f1\Editor\Data\NetStandard\compat\2.1.0\shims\netfx\System.Xml.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
-      <HintPath>C:\Project\BarrelEM\Library\ScriptAssemblies\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.RenderPipelines.Core.Runtime">
       <HintPath>C:\Project\BarrelEM\Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>C:\Project\BarrelEM\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
       <HintPath>C:\Project\BarrelEM\Library\ScriptAssemblies\Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
+      <HintPath>C:\Project\BarrelEM\Library\ScriptAssemblies\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>C:\Project\BarrelEM\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Unity.2D.IK.Runtime.Player.csproj">
       <Project>{000ddef8-761f-f2e1-048b-2bd6964468a8}</Project>
       <Name>Unity.2D.IK.Runtime.Player</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.VisualScripting.Flow.Player.csproj">
+      <Project>{f156dddb-6f28-06c5-ebba-6919dff05f7c}</Project>
+      <Name>Unity.VisualScripting.Flow.Player</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Collections.Player.csproj">
+      <Project>{94aec680-5d46-d308-a56b-074aea6ce379}</Project>
+      <Name>Unity.Collections.Player</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.2D.SpriteShape.Runtime.Player.csproj">
+      <Project>{439ef958-26da-58dc-3528-19ecc7e9e511}</Project>
+      <Name>Unity.2D.SpriteShape.Runtime.Player</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.2D.PixelPerfect.Player.csproj">
+      <Project>{b0b598bd-7b93-a067-ba5f-b5fc8e86ab8d}</Project>
+      <Name>Unity.2D.PixelPerfect.Player</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.TextMeshPro.Player.csproj">
+      <Project>{0fe73258-c0e7-e081-ec5a-4f0e2b820fa2}</Project>
+      <Name>Unity.TextMeshPro.Player</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Profiling.Core.Player.csproj">
+      <Project>{02478302-13c0-7aff-1028-e4ec1e14a602}</Project>
+      <Name>Unity.Profiling.Core.Player</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.MemoryProfiler.Player.csproj">
+      <Project>{9963f9ce-ec53-6aa5-c80d-4fe8316f8de2}</Project>
+      <Name>Unity.MemoryProfiler.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.Burst.Player.csproj">
       <Project>{da83aaf7-1724-e8d8-1e28-37dac7b3dc3d}</Project>
@@ -658,10 +686,6 @@
       <Project>{2675b474-5ca4-ca51-2fef-2f906515f85e}</Project>
       <Name>Unity.2D.Tilemap.Extras.Player</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.VisualScripting.Flow.Player.csproj">
-      <Project>{f156dddb-6f28-06c5-ebba-6919dff05f7c}</Project>
-      <Name>Unity.VisualScripting.Flow.Player</Name>
-    </ProjectReference>
     <ProjectReference Include="Unity.InternalAPIEngineBridge.001.Player.csproj">
       <Project>{37bc8bde-337d-716a-7e4c-cdb561df9b5b}</Project>
       <Name>Unity.InternalAPIEngineBridge.001.Player</Name>
@@ -674,25 +698,9 @@
       <Project>{551ea359-daac-66e7-f49f-33ef41b8f2ca}</Project>
       <Name>Unity.Timeline.Player</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.Collections.Player.csproj">
-      <Project>{94aec680-5d46-d308-a56b-074aea6ce379}</Project>
-      <Name>Unity.Collections.Player</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.2D.SpriteShape.Runtime.Player.csproj">
-      <Project>{439ef958-26da-58dc-3528-19ecc7e9e511}</Project>
-      <Name>Unity.2D.SpriteShape.Runtime.Player</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.2D.PixelPerfect.Player.csproj">
-      <Project>{b0b598bd-7b93-a067-ba5f-b5fc8e86ab8d}</Project>
-      <Name>Unity.2D.PixelPerfect.Player</Name>
-    </ProjectReference>
     <ProjectReference Include="Unity.Mathematics.Player.csproj">
       <Project>{6f7f1867-279a-7146-29df-41915a7a6e8b}</Project>
       <Name>Unity.Mathematics.Player</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.TextMeshPro.Player.csproj">
-      <Project>{0fe73258-c0e7-e081-ec5a-4f0e2b820fa2}</Project>
-      <Name>Unity.TextMeshPro.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.VisualScripting.State.Player.csproj">
       <Project>{5bb0b0fb-881c-265e-b10f-af3373e2cd4e}</Project>
