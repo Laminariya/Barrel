@@ -220,6 +220,8 @@ namespace Kedr
             ToggleRight.isOn = IsRight;
             ToggleRevX.isOn = IsRevX;
             ToggleRevY.isOn = IsRevY;
+
+            
         }
 
         private void Init()
@@ -658,6 +660,7 @@ namespace Kedr
 
             _videoPaths = Directory.GetFiles(Directory.GetCurrentDirectory() + _videoPath, "*.mp4");
             _currentVideoIndex = -1;
+            screensaverImage = galleryImages[0];
             Init();
             ChangeVideo();
             _isPaused = false;
