@@ -333,14 +333,15 @@ namespace Kedr
                 return;
             }
             
-            // if (Input.GetKeyDown(KeyCode.R))
-            // {
-            //     ResetMask();
-            // }
-
             if(_isPaused) return;
+            if (_screensaverActive)
+            {
+                _wipeDelayTimer = -1f;
+            }
+
             if (_wipeDelayTimer > 0f)
             {
+                //Debug.Log("WipeDelay");
                 _wipeDelayTimer -= Time.deltaTime;
                 return;
             }
@@ -356,6 +357,11 @@ namespace Kedr
                 // Во время fade: fg и bg те же, но верхний слой постепенно исчезает (fadeT)
                 Texture fg = GetImageByIndex(_fgIndex);
                 Texture bg = GetImageByIndex(_bgIndex);
+                if (_screensaverActive)
+                {
+                    fg = RawImage.mainTexture;
+                }
+                
                 SetRevealPair(fg, bg, t);
 
                 if (_fadeTimer >= fadeDuration) //После таймера меняем изображения на следующие!!!
@@ -430,11 +436,8 @@ namespace Kedr
                     _texture2D.SetPixel(x, y, pixels[j * lenght + i]); //Стандартно
                 }
             }
-
-            //readTex.SetPixels(_webcam.GetPixels(200, 200, 100, 100));
+            
             _texture2D.Apply();
-             //TestSpriteRenderer.sprite = Sprite.Create(_texture2D, new Rect(0.0f, 0.0f, _texture2D.width, _texture2D.height),
-              //   new Vector2(0.5f, 0.5f), 100.0f); 
             
             // --- Генерация маски по веб-камере ---
             brushMaskMaterial.mainTexture = _texture2D;
@@ -500,12 +503,16 @@ namespace Kedr
                 if (Time.time - _removeTimer > RemoveTimer)
                 {
                     //Запускаем Ремув изображения
-                    
-                    if(_screensaverActive)
+
+                    if (_screensaverActive)
+                    {
                         RemoveRawImage.color = Color.Lerp(RemoveRawImage.color, Color.white, Time.deltaTime * 20);
+                        Debug.Log("Removed Raw Image");
+                    }
                     else
                     {
                         RemoveImage.color = Color.Lerp(RemoveImage.color, Color.white, Time.deltaTime * 20);
+                        Debug.Log("Removed Image");
                     }
                 }
 
@@ -572,6 +579,7 @@ namespace Kedr
             Debug.Log("Screensaver");
             ChangeVideo();
             _screensaverActive = true;
+            _wipeDelayTimer = 0f;
             _fgIndex = -1;
             _bgIndex = 0;
             var bg = galleryImages.Count > 0 ? galleryImages[0] : null;
