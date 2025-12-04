@@ -694,11 +694,17 @@ namespace Kedr
                 MeshRenderer.gameObject.SetActive(false);
                 Circle.SetActive(false);
                 // PlayerPrefs.SetFloat("Fade", FadeSlider.value);
+                _circleGalleryWipe.jsonData.Fade = FadeSlider.value;
                 // PlayerPrefs.SetFloat("Threshold", ThresholdSlider.value);
+                _circleGalleryWipe.jsonData.Threshold = ThresholdSlider.value;
                 // PlayerPrefs.SetInt("IsLeft", IsLeft ? 1 : 0);
+                _circleGalleryWipe.jsonData.IsLeft = IsLeft;
                 // PlayerPrefs.SetInt("IsRight", IsRight ? 1 : 0);
+                _circleGalleryWipe.jsonData.IsRight = IsRight;
                 // PlayerPrefs.SetInt("IsRevX", IsRevX ? 1 : 0);
+                _circleGalleryWipe.jsonData.IsRevX = IsRevX;
                 // PlayerPrefs.SetInt("IsRevY", IsRevY ? 1 : 0);
+                _circleGalleryWipe.jsonData.IsRevY = IsRevY;
                 // PlayerPrefs.Save();
                 _circleGalleryWipe.SaveSettings();
                 Debug.Log("Save Settings " + FadeSlider.value + " " + ThresholdSlider.value);

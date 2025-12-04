@@ -69,12 +69,16 @@ public class CircleGalleryWipe : MonoBehaviour
     public void SaveSettings()
     {
         // PlayerPrefs.SetInt("CenterX_Wipe", CenterX);
+        jsonData.CenterX_Wipe = CenterX;
         // PlayerPrefs.SetInt("CenterY_Wipe", CenterY);
+        jsonData.CenterY_Wipe = CenterY;
         // PlayerPrefs.SetInt("Radius_Wipe", Radius);
+        jsonData.Radius_Wipe = Radius;
         // //PlayerPrefs.SetFloat("Scale_Wipe", RawImage.localScale.x);
         // PlayerPrefs.SetInt("BlackPoint_Wipe", CountBlackPoint);
+        jsonData.BlackPoint_Wipe = CountBlackPoint;
         // PlayerPrefs.Save();
-        SaveJson();
+        //SaveJson();
     }
     
     private void FixedUpdate()
