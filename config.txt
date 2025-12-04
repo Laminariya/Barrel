@@ -1,0 +1,12 @@
+{
+	"CenterX_Wipe": 500,
+	"CenterY_Wipe": 500,
+	"Radius_Wipe": 5,
+	"BlackPoint_Wipe": 4000,
+	"IsLeft": false,
+	"IsRight": false,
+	"IsRevX": false,
+	"IsRevY": false,
+	"Fade": 0.08,
+	"Threshold": 0.27,
+}

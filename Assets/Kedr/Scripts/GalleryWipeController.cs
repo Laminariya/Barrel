@@ -174,31 +174,29 @@ namespace Kedr
         /// </summary>
         private void Start()
         {
-            
+
             System.GC.Collect();
             System.GC.WaitForPendingFinalizers();
-        
+
             // 4. Выгрузка ресурсов
             Resources.UnloadUnusedAssets();
-            
+
             Debug.Log("Start");
             _isReconnected = false;
-            _texture2D = new Texture2D(100,100, TextureFormat.R8, false);
+            _texture2D = new Texture2D(100, 100, TextureFormat.R8, false);
             _circleGalleryWipe = FindObjectOfType<CircleGalleryWipe>();
             InitializeWebCam();
             Debug.Log(_webcam.width + "x" + _webcam.height);
             maskSize.x = _webcam.width;
             maskSize.y = _webcam.height;
             _circleGalleryWipe.Init(_webcam.width, _webcam.height, this);
-            
-            if (PlayerPrefs.HasKey("Fade"))
-            {
-                fadeDuration = PlayerPrefs.GetFloat("Fade")/10f;
-                revealThreshold = PlayerPrefs.GetFloat("Threshold");
-            }
+
+            fadeDuration = _circleGalleryWipe.jsonData.Fade / 10f;
+            revealThreshold = _circleGalleryWipe.jsonData.Threshold;
+
             SettingsPanel.SetActive(false);
             MeshRenderer.gameObject.SetActive(false);
-            MeshRenderer.transform.localScale = new Vector3((float)_webcam.width/_webcam.height, 1, 1);
+            MeshRenderer.transform.localScale = new Vector3((float)_webcam.width / _webcam.height, 1, 1);
             Circle.SetActive(false);
 
             _isPaused = true;
@@ -206,22 +204,17 @@ namespace Kedr
             FadeSlider.onValueChanged.AddListener(OnFadeSlider);
             ThresholdSlider.onValueChanged.AddListener(OnThresholdSlider);
             StartCoroutine(LoadImageVideo());
-            
-            if(PlayerPrefs.HasKey("IsLeft"))
-                IsLeft = PlayerPrefs.GetInt("IsLeft") == 1;
-            if(PlayerPrefs.HasKey("IsRight"))
-                IsRight = PlayerPrefs.GetInt("IsRight") == 1;
-            if(PlayerPrefs.HasKey("IsRevX"))
-                IsRevX = PlayerPrefs.GetInt("IsRevX") == 1;
-            if(PlayerPrefs.HasKey("IsRevY"))
-                IsRevY = PlayerPrefs.GetInt("IsRevY") == 1;
-            
+
+            IsLeft = _circleGalleryWipe.jsonData.IsLeft;
+            IsRight = _circleGalleryWipe.jsonData.IsRight;
+            IsRevX = _circleGalleryWipe.jsonData.IsRevX;
+            IsRevY = _circleGalleryWipe.jsonData.IsRevY;
+
             ToggleLeft.isOn = IsLeft;
             ToggleRight.isOn = IsRight;
             ToggleRevX.isOn = IsRevX;
             ToggleRevY.isOn = IsRevY;
 
-            
         }
 
         private void Init()
@@ -700,24 +693,25 @@ namespace Kedr
                 SettingsPanel.SetActive(false);
                 MeshRenderer.gameObject.SetActive(false);
                 Circle.SetActive(false);
-                PlayerPrefs.SetFloat("Fade", FadeSlider.value);
-                PlayerPrefs.SetFloat("Threshold", ThresholdSlider.value);
-                PlayerPrefs.SetInt("IsLeft", IsLeft ? 1 : 0);
-                PlayerPrefs.SetInt("IsRight", IsRight ? 1 : 0);
-                PlayerPrefs.SetInt("IsRevX", IsRevX ? 1 : 0);
-                PlayerPrefs.SetInt("IsRevY", IsRevY ? 1 : 0);
-                PlayerPrefs.Save();
+                // PlayerPrefs.SetFloat("Fade", FadeSlider.value);
+                // PlayerPrefs.SetFloat("Threshold", ThresholdSlider.value);
+                // PlayerPrefs.SetInt("IsLeft", IsLeft ? 1 : 0);
+                // PlayerPrefs.SetInt("IsRight", IsRight ? 1 : 0);
+                // PlayerPrefs.SetInt("IsRevX", IsRevX ? 1 : 0);
+                // PlayerPrefs.SetInt("IsRevY", IsRevY ? 1 : 0);
+                // PlayerPrefs.Save();
                 _circleGalleryWipe.SaveSettings();
                 Debug.Log("Save Settings " + FadeSlider.value + " " + ThresholdSlider.value);
                 CameraRawImage.SetNativeSize();
+                _circleGalleryWipe.SaveJson();
             }
             else
             {
                 SettingsPanel.SetActive(true);
                 MeshRenderer.gameObject.SetActive(true);
                 Circle.SetActive(true);
-                fadeDuration = PlayerPrefs.GetFloat("Fade") / 10;
-                revealThreshold = PlayerPrefs.GetFloat("Threshold");
+                fadeDuration = _circleGalleryWipe.jsonData.Fade / 10;
+                revealThreshold = _circleGalleryWipe.jsonData.Threshold;
                 FadeText.text = (fadeDuration * 10).ToString().Substring(0, 4);
                 ThresholdText.text = revealThreshold.ToString().Substring(0, 4);
                 FadeSlider.value = fadeDuration * 10;

@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using Kedr;
 using TMPro;
 using UnityEngine;
@@ -22,6 +24,9 @@ public class CircleGalleryWipe : MonoBehaviour
     public TMP_Text CountBlack;
     public int CountBlackPoint;
 
+    public JsonData jsonData;
+    private string _nameConfig = "//config.txt";
+
     private int _width = 752;
     private int _height = 480;
     private float _ratio;
@@ -30,6 +35,7 @@ public class CircleGalleryWipe : MonoBehaviour
 
     public void Init(int width, int height, GalleryWipeController controller)
     {
+        LoadJson();
         _controller = controller;
         _width = width;
         _height = height;
@@ -41,16 +47,13 @@ public class CircleGalleryWipe : MonoBehaviour
         CountBlackPoint = 2000;
         b_UpBlackPoint.onClick.AddListener(OnUpBlackPoint);
         b_DownBlackPoint.onClick.AddListener(OnDownBlackPoint);
-        if(PlayerPrefs.HasKey("CenterX_Wipe"))
-            CenterX = PlayerPrefs.GetInt("CenterX_Wipe");
-        if(PlayerPrefs.HasKey("CenterY_Wipe"))
-            CenterY = PlayerPrefs.GetInt("CenterY_Wipe");
-        if(PlayerPrefs.HasKey("Radius_Wipe"))
-            Radius = PlayerPrefs.GetInt("Radius_Wipe");
-        if(PlayerPrefs.HasKey("Scale_Wipe"))
-            _scale = PlayerPrefs.GetFloat("Scale_Wipe");
-        if(PlayerPrefs.HasKey("BlackPoint_Wipe"))
-            CountBlackPoint = PlayerPrefs.GetInt("BlackPoint_Wipe");
+        
+        CenterX = jsonData.CenterX_Wipe;
+        CenterY = jsonData.CenterY_Wipe;
+        Radius = jsonData.Radius_Wipe;
+        // if(PlayerPrefs.HasKey("Scale_Wipe"))
+        //     _scale = PlayerPrefs.GetFloat("Scale_Wipe");
+        CountBlackPoint = jsonData.BlackPoint_Wipe;
         CountBlack.text = CountBlackPoint.ToString();
         Vector3 scale = Vector3.one;
         scale.x = _scale;
@@ -65,12 +68,13 @@ public class CircleGalleryWipe : MonoBehaviour
 
     public void SaveSettings()
     {
-        PlayerPrefs.SetInt("CenterX_Wipe", CenterX);
-        PlayerPrefs.SetInt("CenterY_Wipe", CenterY);
-        PlayerPrefs.SetInt("Radius_Wipe", Radius);
-        PlayerPrefs.SetFloat("Scale_Wipe", RawImage.localScale.x);
-        PlayerPrefs.SetInt("BlackPoint_Wipe", CountBlackPoint);
-        PlayerPrefs.Save();
+        // PlayerPrefs.SetInt("CenterX_Wipe", CenterX);
+        // PlayerPrefs.SetInt("CenterY_Wipe", CenterY);
+        // PlayerPrefs.SetInt("Radius_Wipe", Radius);
+        // //PlayerPrefs.SetFloat("Scale_Wipe", RawImage.localScale.x);
+        // PlayerPrefs.SetInt("BlackPoint_Wipe", CountBlackPoint);
+        // PlayerPrefs.Save();
+        SaveJson();
     }
     
     private void FixedUpdate()
@@ -251,4 +255,50 @@ public class CircleGalleryWipe : MonoBehaviour
         CountBlackPoint -= 10;
         CountBlack.text = CountBlackPoint.ToString();
     }
+
+    private void LoadJson()
+    {
+        jsonData = new JsonData();
+        try
+        {
+            string text = File.ReadAllText(Directory.GetCurrentDirectory()+_nameConfig);
+            jsonData = JsonUtility.FromJson<JsonData>(text);
+        }
+        catch (FileNotFoundException)
+        {
+            Debug.Log("Файл не найден!");
+        }
+        catch (Exception ex)
+        {
+            Debug.Log($"Ошибка: {ex.Message}");
+        }
+    }
+
+    public void SaveJson()
+    {
+        string json = JsonUtility.ToJson(jsonData);
+        
+        using (StreamWriter writer = new StreamWriter(Directory.GetCurrentDirectory() + _nameConfig))
+        {
+            writer.Write(json);
+        }
+    }
+}
+
+[SerializeField]
+public class JsonData
+{
+    public int CenterX_Wipe;
+    public int CenterY_Wipe;
+    public int Radius_Wipe;
+    public int BlackPoint_Wipe;
+
+    public bool IsLeft;
+    public bool IsRight;
+    public bool IsRevX;
+    public bool IsRevY;
+
+    public float Fade;
+    public float Threshold;
+
 }
